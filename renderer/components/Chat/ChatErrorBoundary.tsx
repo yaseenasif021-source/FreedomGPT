@@ -1,29 +1,30 @@
-import React, { Component } from 'react';
+import React from 'react';
+import { FallbackProps } from 'react-error-boundary';
 
-class ChatErrorBoundary extends Component {
-  constructor(props) {
-    super(props);
-    this.state = { hasError: false };
-  }
-
-  static getDerivedStateFromError(error) {
-    // Update state so the next render will show the fallback UI
-    return { hasError: true };
-  }
-
-  componentDidCatch(error, info) {
-    // You can also log the error to an error reporting service
-    console.error('Error caught in ChatErrorBoundary: ', error, info);
-  }
-
-  render() {
-    if (this.state.hasError) {
-      // You can render any custom fallback UI
-      return <h1>Something went wrong in the chat!</h1>;
-    }
-
-    return this.props.children; 
-  }
+interface ChatErrorBoundaryProps {
+  children: React.ReactNode;
 }
+
+const ChatErrorBoundary: React.FC<ChatErrorBoundaryProps> = ({ children }) => {
+  const handleReset = () => {
+    // Reset logic (e.g., reload the chat, clear error state, etc.)
+  };
+
+  return (
+    <ErrorBoundary FallbackComponent={ErrorFallback} onReset={handleReset}>
+      {children}
+    </ErrorBoundary>
+  );
+};
+
+const ErrorFallback: React.FC<FallbackProps> = ({ error, resetErrorBoundary }) => {
+  return (
+    <div style={{ padding: '20px', textAlign: 'center', border: '1px solid red' }}>
+      <h2>Something went wrong:</h2>
+      <p>{error.message}</p>
+      <button onClick={resetErrorBoundary}>Try Again</button>
+    </div>
+  );
+};
 
 export default ChatErrorBoundary;
